@@ -36,7 +36,7 @@
                         </td>
                         <td class="p-3 text-center">{{ $adj->qty }}</td>
                         <td class="p-3 text-center">{{ $adj->reason }}</td>
-                        <td class="p-3 text-center">{{ $adj->created_at->format('d M Y') }}</td>
+                        <td class="p-3 text-center">{{ $adj->created_at?->format('d M Y') ?? '-' }}</td>
                     </tr>
                 @empty
                     <tr>

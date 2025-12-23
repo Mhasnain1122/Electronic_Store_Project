@@ -200,16 +200,7 @@ class SaleSeeder extends Seeder
                 'paid_amount' => 410,
                 'change_return' => 1,
             ],
-            [
-                'user_id' => 21,
-                'invoice_no' => 'SAL-1020',
-                'subtotal' => 1500,
-                'discount' => 100,
-                'tax' => 70,
-                'total' => 1470,
-                'paid_amount' => 1500,
-                'change_return' => 30,
-            ],
+            
         ]);
     }
 }

@@ -11,26 +11,34 @@ class PurchaseItemSeeder extends Seeder
 {
     public function run(): void
     {
-        // Fetch an existing purchase and product safely
-        $purchase = Purchase::first();
-        $product = Product::first();
-
-        // Prevent FK crash if tables are empty
-        if (!$purchase || !$product) {
+        // Safety check: make sure we have purchases and products
+        if (Purchase::count() === 0 || Product::count() === 0) {
             $this->command?->warn('PurchaseItemSeeder skipped: missing purchases or products.');
-
             return;
         }
 
-        $qty = 5;
-        $cost = $product->cost_price;
+        // Create 20 records
+        for ($i = 1; $i <= 20; $i++) {
+            $purchaseId = rand(1, 20);   // random purchase_id between 1–20
+            $productId  = rand(1, 20);   // random product_id between 1–20
 
-        PurchaseItem::create([
-            'purchase_id' => $purchase->id,
-            'product_id' => $product->id,
-            'qty' => $qty,
-            'cost_price' => $cost,
-            'subtotal' => $qty * $cost,
-        ]);
+            $product = Product::find($productId);
+
+            // Skip if product not found
+            if (!$product) {
+                continue;
+            }
+
+            $qty  = rand(1, 10); // random quantity
+            $cost = $product->cost_price;
+
+            PurchaseItem::create([
+                'purchase_id' => $purchaseId,
+                'product_id'  => $productId,
+                'qty'         => $qty,
+                'cost_price'  => $cost,
+                'subtotal'    => $qty * $cost,
+            ]);
+        }
     }
 }

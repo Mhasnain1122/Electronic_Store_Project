@@ -1,12 +1,23 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
+// Admin Controllers
+use App\Http\Controllers\Admin\CategoryController;
+use App\Http\Controllers\Admin\ProductController;
+use App\Http\Controllers\Admin\PurchaseController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\StockAdjustmentController;
+use App\Http\Controllers\Admin\SupplierController;
+
+// Cashier Controllers
+use App\Http\Controllers\Cashier\SaleController;
 
 /*
 |--------------------------------------------------------------------------
 | Authentication Routes (PUBLIC)
 |--------------------------------------------------------------------------
-| Breeze / Auth routes: /login, /register, /logout, etc.
 */
 require __DIR__.'/auth.php';
 
@@ -14,7 +25,6 @@ require __DIR__.'/auth.php';
 |--------------------------------------------------------------------------
 | Root Route
 |--------------------------------------------------------------------------
-| Let Laravel handle auth redirects
 */
 Route::get('/', function () {
     return redirect()->route('login');
@@ -24,12 +34,9 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 | Dashboard Redirect (AFTER LOGIN)
 |--------------------------------------------------------------------------
-| Single place to decide admin vs cashier
 */
-use Illuminate\Support\Facades\Auth;
-
 Route::middleware('auth')->get('/dashboard', function () {
-    $user = Auth::user(); // Facade resolves null-safety better
+    $user = Auth::user();
 
     if ($user->role === 'admin') {
         return redirect()->route('admin.categories.index');
@@ -43,17 +50,12 @@ Route::middleware('auth')->get('/dashboard', function () {
 | ADMIN ROUTES
 |--------------------------------------------------------------------------
 */
-use App\Http\Controllers\Admin\CategoryController;
-use App\Http\Controllers\Admin\ProductController;
-use App\Http\Controllers\Admin\PurchaseController;
-use App\Http\Controllers\Admin\ReportController;
-use App\Http\Controllers\Admin\StockAdjustmentController;
-use App\Http\Controllers\Admin\SupplierController;
-
 Route::middleware(['auth', 'role:admin'])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
+
+        // Resources
         Route::resource('categories', CategoryController::class);
         Route::resource('suppliers', SupplierController::class);
         Route::resource('products', ProductController::class);
@@ -61,20 +63,22 @@ Route::middleware(['auth', 'role:admin'])
         Route::resource('stock_adjustments', StockAdjustmentController::class)
             ->except(['edit', 'update', 'show']);
 
-        Route::get('purchases', [PurchaseController::class, 'index'])->name('purchases.index');
-        Route::get('purchases/create', [PurchaseController::class, 'create'])->name('purchases.create');
-        Route::post('purchases', [PurchaseController::class, 'store'])->name('purchases.store');
-        Route::get('purchases/{purchase}', [PurchaseController::class, 'show'])->name('purchases.show');
-
+        // --- PURCHASE ROUTES ---
+        
+        // 1. Custom/Specific routes MUST come before the resource wildcard
         Route::get('purchases/returns/create', [PurchaseController::class, 'createReturn'])
             ->name('purchases.returns.create');
+            
         Route::post('purchases/returns', [PurchaseController::class, 'storeReturn'])
             ->name('purchases.returns.store');
 
-        Route::prefix('reports')->name('reports.')->group(function () {
-            // 👇 NEW index route (landing page for Reports)
-            Route::get('/', [ReportController::class, 'index'])->name('index');
+        // 2. Standard Resource 
+        // FIX: Removed ->only(...) so 'edit', 'update', and 'destroy' are now created
+        Route::resource('purchases', PurchaseController::class);
 
+        // --- REPORT ROUTES ---
+        Route::prefix('reports')->name('reports.')->group(function () {
+            Route::get('/', [ReportController::class, 'index'])->name('index');
             Route::get('daily-sales', [ReportController::class, 'dailySales'])->name('daily_sales');
             Route::get('inventory-health', [ReportController::class, 'inventoryHealth'])->name('inventory_health');
             Route::get('supplier-purchases', [ReportController::class, 'supplierPurchases'])->name('supplier_purchases');
@@ -86,12 +90,11 @@ Route::middleware(['auth', 'role:admin'])
 | CASHIER ROUTES
 |--------------------------------------------------------------------------
 */
-use App\Http\Controllers\Cashier\SaleController;
-
 Route::middleware(['auth', 'role:cashier'])
     ->prefix('cashier')
     ->name('cashier.')
     ->group(function () {
+        
         // POS
         Route::get('/pos', [SaleController::class, 'create'])
             ->name('sales.create');

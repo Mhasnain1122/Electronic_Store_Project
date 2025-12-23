@@ -9,29 +9,22 @@ class ProductSeeder extends Seeder
 {
     public function run(): void
     {
-        Product::insert([
-            [
-                'category_id' => 1,
-                'supplier_id' => 1,
-                'name' => 'Dell XPS 13',
-                'barcode' => 'DXPS13',
-                'cost_price' => 800,
-                'sale_price' => 1000,
-                'stock_qty' => 20,
-                'min_stock' => 5,
-                'warranty_months' => 12,
-            ],
-            [
-                'category_id' => 2,
-                'supplier_id' => 2,
-                'name' => 'Wireless Mouse',
-                'barcode' => 'MOUSE123',
-                'cost_price' => 10,
-                'sale_price' => 25,
-                'stock_qty' => 50,
-                'min_stock' => 10,
-                'warranty_months' => 0,
-            ],
-        ]);
+        $products = [];
+
+        for ($i = 1; $i <= 20; $i++) {
+            $products[] = [
+                'category_id'     => rand(1, 5), // random category between 1–5
+                'supplier_id'     => rand(1, 20), // random supplier between 1–20
+                'name'            => 'Product ' . $i,
+                'barcode'         => 'BARCODE' . str_pad($i, 4, '0', STR_PAD_LEFT),
+                'cost_price'      => rand(50, 1000), // random cost
+                'sale_price'      => rand(100, 1500), // random sale price
+                'stock_qty'       => rand(0, 100), // random stock availability
+                'min_stock'       => rand(1, 10), // random minimum stock threshold
+                'warranty_months' => rand(0, 24), // random warranty period
+            ];
+        }
+
+        Product::insert($products);
     }
 }

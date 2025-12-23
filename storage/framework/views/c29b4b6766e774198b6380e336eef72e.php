@@ -1,12 +1,12 @@
-@extends('layouts.app')
 
-@section('page-title', 'Purchases Management')
 
-@section('content')
+<?php $__env->startSection('page-title', 'Purchases Management'); ?>
+
+<?php $__env->startSection('content'); ?>
 <div class="max-w-7xl mx-auto">
 
-    {{-- Success Message Alert --}}
-    @if(session('success'))
+    
+    <?php if(session('success')): ?>
     <div class="mb-4 bg-green-50 border-l-4 border-green-500 p-4 rounded shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
@@ -15,14 +15,14 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <p class="text-sm text-green-700">{{ session('success') }}</p>
+                <p class="text-sm text-green-700"><?php echo e(session('success')); ?></p>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
-    {{-- Error Message Alert --}}
-    @if(session('error'))
+    
+    <?php if(session('error')): ?>
     <div class="mb-4 bg-red-50 border-l-4 border-red-500 p-4 rounded shadow-sm">
         <div class="flex">
             <div class="flex-shrink-0">
@@ -31,14 +31,14 @@
                 </svg>
             </div>
             <div class="ml-3">
-                <p class="text-sm text-red-700">{{ session('error') }}</p>
+                <p class="text-sm text-red-700"><?php echo e(session('error')); ?></p>
             </div>
         </div>
     </div>
-    @endif
+    <?php endif; ?>
 
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
-        {{-- Card Header --}}
+        
         <div class="p-6 border-b border-gray-100 flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
                 <h2 class="text-xl font-bold text-gray-800 flex items-center gap-2">
@@ -47,10 +47,10 @@
                 <p class="text-sm text-gray-500 mt-1">View and manage incoming stock and invoices.</p>
             </div>
             <div class="flex gap-2">
-                {{-- Optional: Add Return Button if needed later --}}
-                {{-- <a href="{{ route('admin.purchases.returns.create') }}" class="... btn-secondary ...">Process Return</a> --}}
+                
+                
 
-                <a href="{{ route('admin.purchases.create') }}" 
+                <a href="<?php echo e(route('admin.purchases.create')); ?>" 
                    class="inline-flex items-center justify-center px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium rounded-lg transition-colors shadow-sm focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                     <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
@@ -60,7 +60,7 @@
             </div>
         </div>
 
-        {{-- Table --}}
+        
         <div class="overflow-x-auto">
             <table class="w-full text-sm text-left">
                 <thead class="bg-gray-50 text-gray-500 uppercase font-semibold text-xs">
@@ -73,27 +73,31 @@
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
-                    @forelse($purchases as $purchase)
+                    <?php $__empty_1 = true; $__currentLoopData = $purchases; $__env->addLoop($__currentLoopData); foreach($__currentLoopData as $purchase): $__env->incrementLoopIndices(); $loop = $__env->getLastLoop(); $__empty_1 = false; ?>
                         <tr class="hover:bg-gray-50 transition-colors">
                             <td class="px-6 py-4 text-gray-700">
-                                {{ $purchase->purchase_date->format('M d, Y') }}
+                                <?php echo e($purchase->purchase_date->format('M d, Y')); ?>
+
                             </td>
                             <td class="px-6 py-4 font-medium text-gray-900">
-                                {{ $purchase->supplier->name ?? 'Unknown Supplier' }}
+                                <?php echo e($purchase->supplier->name ?? 'Unknown Supplier'); ?>
+
                             </td>
                             <td class="px-6 py-4 text-gray-600">
                                 <span class="bg-gray-100 text-gray-600 px-2 py-1 rounded text-xs font-mono">
-                                    {{ $purchase->invoice_no }}
+                                    <?php echo e($purchase->invoice_no); ?>
+
                                 </span>
                             </td>
                             <td class="px-6 py-4 font-semibold text-gray-800">
-                                Rs {{ number_format($purchase->total_amount, 2) }}
+                                Rs <?php echo e(number_format($purchase->total_amount, 2)); ?>
+
                             </td>
                             <td class="px-6 py-4 text-right">
                                 <div class="flex items-center justify-end gap-3">
                                     
-                                    {{-- View Details (New) --}}
-                                    <a href="{{ route('admin.purchases.show', $purchase->id) }}" 
+                                    
+                                    <a href="<?php echo e(route('admin.purchases.show', $purchase->id)); ?>" 
                                        class="text-gray-400 hover:text-green-600 transition-colors"
                                        title="View Details">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -102,8 +106,8 @@
                                         </svg>
                                     </a>
 
-                                    {{-- Edit Button --}}
-                                    <a href="{{ route('admin.purchases.edit', $purchase->id) }}" 
+                                    
+                                    <a href="<?php echo e(route('admin.purchases.edit', $purchase->id)); ?>" 
                                        class="text-gray-400 hover:text-blue-600 transition-colors"
                                        title="Edit Purchase">
                                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,12 +115,12 @@
                                         </svg>
                                     </a>
 
-                                    {{-- Delete Form --}}
-                                    <form action="{{ route('admin.purchases.destroy', $purchase->id) }}" 
+                                    
+                                    <form action="<?php echo e(route('admin.purchases.destroy', $purchase->id)); ?>" 
                                           method="POST" 
-                                          onsubmit="return confirm('Are you sure you want to delete Invoice #{{ $purchase->invoice_no }}? This action cannot be undone and will affect stock levels.');">
-                                        @csrf
-                                        @method('DELETE')
+                                          onsubmit="return confirm('Are you sure you want to delete Invoice #<?php echo e($purchase->invoice_no); ?>? This action cannot be undone and will affect stock levels.');">
+                                        <?php echo csrf_field(); ?>
+                                        <?php echo method_field('DELETE'); ?>
                                         <button type="submit" 
                                                 class="text-gray-400 hover:text-red-600 transition-colors mt-1"
                                                 title="Delete Purchase">
@@ -128,7 +132,7 @@
                                 </div>
                             </td>
                         </tr>
-                    @empty
+                    <?php endforeach; $__env->popLoop(); $loop = $__env->getLastLoop(); if ($__empty_1): ?>
                         <tr>
                             <td colspan="5" class="px-6 py-10 text-center text-gray-500">
                                 <div class="flex flex-col items-center justify-center">
@@ -137,21 +141,23 @@
                                     </svg>
                                     <p class="text-base font-medium">No purchases found</p>
                                     <p class="text-sm mt-1">Record your first stock purchase to see it here.</p>
-                                    <a href="{{ route('admin.purchases.create') }}" class="mt-4 text-blue-600 hover:underline">Add Purchase</a>
+                                    <a href="<?php echo e(route('admin.purchases.create')); ?>" class="mt-4 text-blue-600 hover:underline">Add Purchase</a>
                                 </div>
                             </td>
                         </tr>
-                    @endforelse
+                    <?php endif; ?>
                 </tbody>
             </table>
         </div>
         
-        {{-- Pagination (Will show if you use paginate() in controller) --}}
-        @if(method_exists($purchases, 'links'))
+        
+        <?php if(method_exists($purchases, 'links')): ?>
         <div class="px-6 py-4 border-t border-gray-100">
-            {{ $purchases->links() }}
+            <?php echo e($purchases->links()); ?>
+
         </div>
-        @endif
+        <?php endif; ?>
     </div>
 </div>
-@endsection
+<?php $__env->stopSection(); ?>
+<?php echo $__env->make('layouts.app', array_diff_key(get_defined_vars(), ['__data' => 1, '__path' => 1]))->render(); ?><?php /**PATH C:\xampp\htdocs\electronics-store-app - Copy\electronics-store-app - Copy\resources\views/admin/purchases/index.blade.php ENDPATH**/ ?>
